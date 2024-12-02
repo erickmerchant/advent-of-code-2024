@@ -1,4 +1,5 @@
 pub mod day01;
+pub mod day02;
 
 use clap::Parser;
 use core::panic;
@@ -21,6 +22,8 @@ fn main() {
     let output = match (args.day, args.part) {
         (1, 1) => day01::part1(input),
         (1, 2) => day01::part2(input),
+        (2, 1) => day02::part1(input),
+        (2, 2) => day02::part2(input),
         _ => panic!("Incomplete day or part"),
     };
 
