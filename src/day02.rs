@@ -35,10 +35,7 @@ pub fn part1(input: Vec<String>) -> usize {
     let mut result = 0;
 
     for line in input {
-        let parts: Vec<isize> = line
-            .split_whitespace()
-            .map(|s| s.parse().unwrap())
-            .collect();
+        let parts = crate::parse_vec_from_line::<isize>(line).unwrap();
 
         result += test_parts(parts);
     }
@@ -50,10 +47,7 @@ pub fn part2(input: Vec<String>) -> usize {
     let mut result = 0;
 
     'outer: for line in input {
-        let parts: Vec<isize> = line
-            .split_whitespace()
-            .map(|s| s.parse().unwrap())
-            .collect();
+        let parts = crate::parse_vec_from_line::<isize>(line).unwrap();
 
         let r = test_parts(parts.clone());
 

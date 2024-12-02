@@ -1,6 +1,4 @@
-pub mod day01;
-pub mod day02;
-
+use advent::{day01, day02};
 use clap::Parser;
 use core::panic;
 use std::io::{self, BufRead};
@@ -27,5 +25,5 @@ fn main() {
         _ => panic!("Incomplete day or part"),
     };
 
-    println!("{output}");
+    println!("{output:?}");
 }
