@@ -12,20 +12,18 @@ fn test_parts(parts: Vec<isize>) -> usize {
     let mut prev = None;
 
     for part in parts {
-        match prev {
-            None => {
-                prev = Some(part);
-            }
-            Some(prev_part) => {
-                let diff = (prev_part - part).abs();
+        prev = match prev {
+            None => Some(part),
+            Some(prev) => {
+                let diff = (prev - part).abs();
 
                 if !(1..=3).contains(&diff) {
                     return 0;
                 }
 
-                prev = Some(part);
+                Some(part)
             }
-        }
+        };
     }
 
     1
