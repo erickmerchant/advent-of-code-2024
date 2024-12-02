@@ -1,5 +1,3 @@
-// use std::collections::HashMap;
-
 fn test_parts(parts: Vec<isize>) -> usize {
     let mut parts = parts.clone();
 
