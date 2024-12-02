@@ -21,7 +21,7 @@ fn test_parts(parts: Vec<isize>) -> usize {
             Some(prev_part) => {
                 let diff = (prev_part - part).abs();
 
-                if diff < 1 || diff > 3 {
+                if !(1..=3).contains(&diff) {
                     return 0;
                 }
 
