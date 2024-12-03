@@ -38,7 +38,7 @@ pub fn part2(input: Vec<String>) -> usize {
                         continue;
                     }
 
-                    for (_, [a, b]) in MUL_REGEX.captures_iter(&m).map(|c| c.extract()) {
+                    for (_, [a, b]) in MUL_REGEX.captures_iter(m).map(|c| c.extract()) {
                         let a = a.parse::<usize>().unwrap();
                         let b = b.parse::<usize>().unwrap();
 
