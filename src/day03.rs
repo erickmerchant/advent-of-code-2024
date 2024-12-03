@@ -1,12 +1,11 @@
-use once_cell::sync::Lazy;
 use regex::Regex;
 
 pub fn part1(input: Vec<String>) -> usize {
-    static MUL_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r"mul\((\d+),(\d+)\)").unwrap());
+    let mul_regex: Regex = Regex::new(r"mul\((\d+),(\d+)\)").unwrap();
     let mut result = 0;
 
     for line in input {
-        for (_, [a, b]) in MUL_REGEX.captures_iter(&line).map(|c| c.extract()) {
+        for (_, [a, b]) in mul_regex.captures_iter(&line).map(|c| c.extract()) {
             let a = a.parse::<usize>().unwrap();
             let b = b.parse::<usize>().unwrap();
 
@@ -18,14 +17,13 @@ pub fn part1(input: Vec<String>) -> usize {
 }
 
 pub fn part2(input: Vec<String>) -> usize {
-    static INSTRUCT_REGEX: Lazy<Regex> =
-        Lazy::new(|| Regex::new(r"mul\(\d+,\d+\)|do\(\)|don't\(\)").unwrap());
-    static MUL_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r"mul\((\d+),(\d+)\)").unwrap());
+    let instruct_regex: Regex = Regex::new(r"mul\(\d+,\d+\)|do\(\)|don't\(\)").unwrap();
+    let mul_regex: Regex = Regex::new(r"mul\((\d+),(\d+)\)").unwrap();
     let mut result = 0;
     let mut mul_on = true;
 
     for line in input {
-        for m in INSTRUCT_REGEX.find_iter(&line).map(|m| m.as_str()) {
+        for m in instruct_regex.find_iter(&line).map(|m| m.as_str()) {
             match m {
                 "do()" => {
                     mul_on = true;
@@ -38,7 +36,7 @@ pub fn part2(input: Vec<String>) -> usize {
                         continue;
                     }
 
-                    for (_, [a, b]) in MUL_REGEX.captures_iter(m).map(|c| c.extract()) {
+                    for (_, [a, b]) in mul_regex.captures_iter(m).map(|c| c.extract()) {
                         let a = a.parse::<usize>().unwrap();
                         let b = b.parse::<usize>().unwrap();
 
