@@ -1,11 +1,15 @@
 use regex::Regex;
+use std::sync::LazyLock;
+
+static MUL_REGEX: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"mul\((\d+),(\d+)\)").unwrap());
+static INSTRUCT_REGEX: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"mul\(\d+,\d+\)|do\(\)|don't\(\)").unwrap());
 
 pub fn part1(input: Vec<String>) -> usize {
-    let mul_regex: Regex = Regex::new(r"mul\((\d+),(\d+)\)").unwrap();
     let mut result = 0;
 
     for line in input {
-        for (_, [a, b]) in mul_regex.captures_iter(&line).map(|c| c.extract()) {
+        for (_, [a, b]) in MUL_REGEX.captures_iter(&line).map(|c| c.extract()) {
             let a = a.parse::<usize>().unwrap();
             let b = b.parse::<usize>().unwrap();
 
@@ -17,13 +21,11 @@ pub fn part1(input: Vec<String>) -> usize {
 }
 
 pub fn part2(input: Vec<String>) -> usize {
-    let instruct_regex: Regex = Regex::new(r"mul\(\d+,\d+\)|do\(\)|don't\(\)").unwrap();
-    let mul_regex: Regex = Regex::new(r"mul\((\d+),(\d+)\)").unwrap();
     let mut result = 0;
     let mut mul_on = true;
 
     for line in input {
-        for m in instruct_regex.find_iter(&line).map(|m| m.as_str()) {
+        for m in INSTRUCT_REGEX.find_iter(&line).map(|m| m.as_str()) {
             match m {
                 "do()" => {
                     mul_on = true;
@@ -36,12 +38,7 @@ pub fn part2(input: Vec<String>) -> usize {
                         continue;
                     }
 
-                    for (_, [a, b]) in mul_regex.captures_iter(m).map(|c| c.extract()) {
-                        let a = a.parse::<usize>().unwrap();
-                        let b = b.parse::<usize>().unwrap();
-
-                        result += a * b;
-                    }
+                    result += part1(vec![m.to_string()]);
                 }
             }
         }
