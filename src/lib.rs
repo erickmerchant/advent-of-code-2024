@@ -1,5 +1,6 @@
 pub mod day01;
 pub mod day02;
+pub mod day03;
 
 pub fn parse_vec_from_line<T>(line: String) -> Result<Vec<T>, T::Err>
 where

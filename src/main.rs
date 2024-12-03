@@ -1,4 +1,4 @@
-use advent::{day01, day02};
+use advent::{day01, day02, day03};
 use clap::Parser;
 use core::panic;
 use std::io::{self, BufRead};
@@ -22,6 +22,8 @@ fn main() {
         (1, 2) => day01::part2(input),
         (2, 1) => day02::part1(input),
         (2, 2) => day02::part2(input),
+        (3, 1) => day03::part1(input),
+        (3, 2) => day03::part2(input),
         _ => panic!("Incomplete day or part"),
     };
 
