@@ -6,6 +6,7 @@ fn part1(input: Vec<String>) -> usize {
 
     for line in input {
         let parts = advent::parse_vec_from_line::<usize>(line).unwrap();
+
         left.push(parts[0]);
         right.push(parts[1]);
     }
@@ -32,6 +33,7 @@ fn part2(input: Vec<String>) -> usize {
 
     for line in input {
         let parts: Vec<usize> = advent::parse_vec_from_line::<usize>(line).unwrap();
+
         left.push(parts[0]);
         *right_frequency_map.entry(parts[1]).or_insert(0) += 1;
     }

@@ -15,7 +15,6 @@ fn part2(input: Vec<String>) -> usize {
 
     'outer: for line in input {
         let parts = advent::parse_vec_from_line::<isize>(line).unwrap();
-
         let r = check_parts(parts.clone());
 
         result += r;
@@ -26,6 +25,7 @@ fn part2(input: Vec<String>) -> usize {
 
         for i in 0..parts.len() {
             let mut parts = parts.clone();
+
             parts.remove(i);
 
             let r = check_parts(parts);
