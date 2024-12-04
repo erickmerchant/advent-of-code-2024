@@ -49,6 +49,13 @@ fn part2(input: Vec<String>) -> usize {
     result
 }
 
+fn main() {
+    let input = advent::get_input();
+
+    println!("{}", part1(input.clone()));
+    println!("{}", part2(input.clone()));
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -78,11 +85,4 @@ mod tests {
 
         assert_eq!(part2(fixture), 31);
     }
-}
-
-fn main() {
-    let input = advent::get_input();
-
-    println!("{}", part1(input.clone()));
-    println!("{}", part2(input.clone()));
 }
