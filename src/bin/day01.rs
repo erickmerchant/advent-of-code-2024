@@ -1,11 +1,11 @@
 use std::collections::HashMap;
 
-pub fn part1(input: Vec<String>) -> usize {
+fn part1(input: Vec<String>) -> usize {
     let mut left: Vec<usize> = vec![];
     let mut right: Vec<usize> = vec![];
 
     for line in input {
-        let parts = crate::parse_vec_from_line::<usize>(line).unwrap();
+        let parts = advent::parse_vec_from_line::<usize>(line).unwrap();
         left.push(parts[0]);
         right.push(parts[1]);
     }
@@ -26,12 +26,12 @@ pub fn part1(input: Vec<String>) -> usize {
     result
 }
 
-pub fn part2(input: Vec<String>) -> usize {
+fn part2(input: Vec<String>) -> usize {
     let mut right_frequency_map = HashMap::<usize, usize>::new();
     let mut left: Vec<usize> = vec![];
 
     for line in input {
-        let parts: Vec<usize> = crate::parse_vec_from_line::<usize>(line).unwrap();
+        let parts: Vec<usize> = advent::parse_vec_from_line::<usize>(line).unwrap();
         left.push(parts[0]);
         *right_frequency_map.entry(parts[1]).or_insert(0) += 1;
     }
@@ -76,4 +76,11 @@ mod tests {
 
         assert_eq!(part2(fixture), 31);
     }
+}
+
+fn main() {
+    let input = advent::get_input();
+
+    println!("{}", part1(input.clone()));
+    println!("{}", part2(input.clone()));
 }

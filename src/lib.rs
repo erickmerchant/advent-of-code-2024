@@ -1,6 +1,10 @@
-pub mod day01;
-pub mod day02;
-pub mod day03;
+use std::io::{self, BufRead};
+
+pub fn get_input() -> Vec<String> {
+    let stdin = io::stdin();
+    let handle = stdin.lock();
+    handle.lines().map_while(Result::ok).collect()
+}
 
 pub fn parse_vec_from_line<T>(line: String) -> Result<Vec<T>, T::Err>
 where

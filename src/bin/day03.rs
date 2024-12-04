@@ -5,7 +5,7 @@ static MUL_REGEX: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"mul\((\d+),(\d
 static INSTRUCT_REGEX: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"mul\(\d+,\d+\)|do\(\)|don't\(\)").unwrap());
 
-pub fn part1(input: Vec<String>) -> usize {
+fn part1(input: Vec<String>) -> usize {
     let mut result = 0;
 
     for line in input {
@@ -20,7 +20,7 @@ pub fn part1(input: Vec<String>) -> usize {
     result
 }
 
-pub fn part2(input: Vec<String>) -> usize {
+fn part2(input: Vec<String>) -> usize {
     let mut result = 0;
     let mut mul_on = true;
 
@@ -74,4 +74,11 @@ mod tests {
 
         assert_eq!(part2(fixture), 48);
     }
+}
+
+fn main() {
+    let input = advent::get_input();
+
+    println!("{}", part1(input.clone()));
+    println!("{}", part2(input.clone()));
 }
