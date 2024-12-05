@@ -3,49 +3,10 @@ use std::cmp::Ordering;
 
 type Rule = (usize, usize);
 
-fn part1(input: Vec<String>) -> usize {
+fn both_parts(input: Vec<String>) -> (usize, usize) {
     let mut rules: Vec<Rule> = vec![];
-    let mut result = 0;
-
-    'outer: for line in input {
-        if line.contains('|') {
-            let rule: Rule = line
-                .split('|')
-                .map(|s| s.parse::<usize>().unwrap())
-                .collect_tuple()
-                .unwrap();
-
-            rules.push(rule);
-        }
-
-        if line.contains(',') {
-            let numbers: Vec<usize> = line
-                .split(',')
-                .map(|s| s.parse::<usize>().unwrap())
-                .collect();
-
-            for (a, b) in rules.clone() {
-                match (
-                    numbers.iter().position(|&x| x == a),
-                    numbers.iter().position(|&x| x == b),
-                ) {
-                    (Some(a), Some(b)) if a > b => {
-                        continue 'outer;
-                    }
-                    _ => {}
-                };
-            }
-
-            result += numbers[numbers.len() / 2]
-        }
-    }
-
-    result
-}
-
-fn part2(input: Vec<String>) -> usize {
-    let mut rules: Vec<Rule> = vec![];
-    let mut result = 0;
+    let mut result_rights = 0;
+    let mut result_wrongs = 0;
 
     'outer: for line in input {
         if line.contains('|') {
@@ -84,24 +45,28 @@ fn part2(input: Vec<String>) -> usize {
                             Ordering::Equal
                         });
 
-                        result += numbers[numbers.len() / 2];
+                        result_wrongs += numbers[numbers.len() / 2];
 
                         continue 'outer;
                     }
                     _ => {}
                 };
             }
+
+            result_rights += numbers[numbers.len() / 2]
         }
     }
 
-    result
+    (result_rights, result_wrongs)
 }
 
 fn main() {
     let input = advent::get_input();
 
-    println!("{}", part1(input.clone()));
-    println!("{}", part2(input.clone()));
+    let (a, b) = both_parts(input);
+
+    println!("{}", a);
+    println!("{}", b);
 }
 
 #[cfg(test)]
@@ -143,16 +108,9 @@ mod tests {
     }
 
     #[test]
-    fn test_part1() {
+    fn test_both_parts() {
         let fixture = get_fixture();
 
-        assert_eq!(part1(fixture), 143);
-    }
-
-    #[test]
-    fn test_part2() {
-        let fixture = get_fixture();
-
-        assert_eq!(part2(fixture), 123);
+        assert_eq!(both_parts(fixture), (143, 123));
     }
 }
