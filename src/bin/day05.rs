@@ -26,11 +26,11 @@ fn both_parts(input: Vec<String>) -> (usize, usize) {
                 .collect();
 
             for (a, b) in rules.clone() {
-                match (
+                if let (Some(a), Some(b)) = (
                     numbers.iter().position(|&x| x == a),
                     numbers.iter().position(|&x| x == b),
                 ) {
-                    (Some(a), Some(b)) if a > b => {
+                    if a > b {
                         numbers.sort_by(|x, y| {
                             for (a, b) in rules.clone() {
                                 if x == &a && y == &b {
@@ -49,8 +49,7 @@ fn both_parts(input: Vec<String>) -> (usize, usize) {
 
                         continue 'outer;
                     }
-                    _ => {}
-                };
+                }
             }
 
             result_rights += numbers[numbers.len() / 2]
