@@ -9,6 +9,9 @@ enum Direction {
     West,
 }
 
+type Point = (usize, usize);
+type Step = (usize, usize, Direction);
+
 fn part1(input: Vec<String>) -> usize {
     let lines: Vec<Vec<char>> = input
         .into_iter()
@@ -29,7 +32,7 @@ fn part2(input: Vec<String>) -> usize {
     let last_y = lines.len() - 1;
     let start = get_start(&lines);
     let (path, _) = get_path(&lines, start, None);
-    let results: Vec<Option<(usize, usize)>> = path
+    let results: Vec<Option<Point>> = path
         .par_iter()
         .map(|(x, y, d)| {
             let placed_object = match d {
@@ -59,15 +62,11 @@ fn part2(input: Vec<String>) -> usize {
     results.iter().flatten().unique().count()
 }
 
-fn get_path(
-    lines: &[Vec<char>],
-    start: (usize, usize, Direction),
-    placed_object: Option<(usize, usize)>,
-) -> (Vec<(usize, usize, Direction)>, bool) {
+fn get_path(lines: &[Vec<char>], start: Step, placed_object: Option<Point>) -> (Vec<Step>, bool) {
     let last_x = lines[0].len() - 1;
     let last_y = lines.len() - 1;
-    let mut current: (usize, usize, Direction) = start;
-    let mut visited: Vec<(usize, usize, Direction)> = vec![];
+    let mut current: Step = start;
+    let mut visited: Vec<Step> = vec![];
     let mut is_loop = false;
 
     loop {
@@ -80,7 +79,7 @@ fn get_path(
         visited.push(current);
 
         let (x, y, direction) = &current;
-        let next: (usize, usize) = match direction {
+        let next: Point = match direction {
             Direction::North if *y > 0 => (*x, y - 1),
             Direction::South if y < &last_y => (*x, y + 1),
             Direction::East if x < &last_x => (x + 1, *y),
@@ -105,7 +104,7 @@ fn get_path(
     (visited, is_loop)
 }
 
-fn get_start(lines: &[Vec<char>]) -> (usize, usize, Direction) {
+fn get_start(lines: &[Vec<char>]) -> Step {
     for (y, line) in lines.iter().enumerate() {
         for (x, cell) in line.iter().enumerate() {
             if cell == &'^' {
