@@ -29,11 +29,7 @@ fn part2(input: Vec<String>) -> usize {
     let last_y = lines.len() - 1;
     let start = get_start(&lines);
     let (path, _) = get_path(&lines, start, None);
-    let mut results = vec![];
-
-    path.iter()
-        .filter(|a| *a != &start)
-        .collect_vec()
+    let results: Vec<Option<(usize, usize)>> = path
         .par_iter()
         .map(|(x, y, d)| {
             let placed_object = match d {
@@ -46,7 +42,7 @@ fn part2(input: Vec<String>) -> usize {
 
             let (a, b) = placed_object;
 
-            if lines[b][a] == '#' {
+            if start == (a, b, *d) || lines[b][a] == '#' {
                 return None;
             }
 
@@ -58,11 +54,9 @@ fn part2(input: Vec<String>) -> usize {
                 None
             }
         })
-        .collect_into_vec(&mut results);
+        .collect();
 
-    let results = results.iter().flatten().unique().sorted().collect_vec();
-
-    results.len()
+    results.iter().flatten().unique().count()
 }
 
 fn get_path(
