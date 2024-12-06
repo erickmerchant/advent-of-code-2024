@@ -1,5 +1,7 @@
-use std::collections::HashSet;
+use itertools::Itertools;
+use rayon::prelude::*;
 
+#[derive(Copy, Clone, PartialEq, Debug, Hash, Eq)]
 enum Direction {
     North,
     South,
@@ -12,63 +14,113 @@ fn part1(input: Vec<String>) -> usize {
         .into_iter()
         .map(|s| s.chars().collect::<Vec<_>>())
         .collect();
+    let (path, _) = get_path(&lines, get_start(&lines), None);
+    let visited = path.iter().map(|(a, b, _d)| (a, b)).unique();
+
+    visited.count()
+}
+
+fn part2(input: Vec<String>) -> usize {
+    let lines: Vec<Vec<char>> = input
+        .into_iter()
+        .map(|s| s.chars().collect::<Vec<_>>())
+        .collect();
     let last_x = lines[0].len() - 1;
     let last_y = lines.len() - 1;
-    let mut current: (usize, usize, Direction);
-    let mut visited: HashSet<(usize, usize)> = HashSet::new();
+    let start = get_start(&lines);
+    let (path, _) = get_path(&lines, start, None);
+    let mut results = vec![];
 
-    for y in 0..lines.len() {
-        for x in 0..lines[y].len() {
-            if lines[y][x] == '^' {
-                current = (x, y, Direction::North);
+    path.iter()
+        .filter(|a| *a != &start)
+        .collect_vec()
+        .par_iter()
+        .map(|(x, y, d)| {
+            let placed_object = match d {
+                Direction::North if *y > 0 => (*x, y - 1),
+                Direction::South if y < &last_y => (*x, y + 1),
+                Direction::East if x < &last_x => (x + 1, *y),
+                Direction::West if *x > 0 => (x - 1, *y),
+                _ => return None,
+            };
 
-                loop {
-                    let (x, y, direction) = &current;
+            let (a, b) = placed_object;
 
-                    visited.insert((*x, *y));
+            if lines[b][a] == '#' {
+                return None;
+            }
 
-                    let next: (usize, usize);
+            let (_, is_loop) = get_path(&lines, start, Some(placed_object));
 
-                    match direction {
-                        Direction::North if *y > 0 => {
-                            next = (*x, y - 1);
-                        }
-                        Direction::South if y < &last_y => {
-                            next = (*x, y + 1);
-                        }
-                        Direction::East if x < &last_x => {
-                            next = (x + 1, *y);
-                        }
-                        Direction::West if *x > 0 => {
-                            next = (x - 1, *y);
-                        }
-                        _ => break,
-                    }
+            if is_loop {
+                Some(placed_object)
+            } else {
+                None
+            }
+        })
+        .collect_into_vec(&mut results);
 
-                    let (x, y) = next;
+    let results = results.iter().flatten().unique().sorted().collect_vec();
 
-                    if lines[y][x] == '#' {
-                        current.2 = match current.2 {
-                            Direction::North => Direction::East,
-                            Direction::East => Direction::South,
-                            Direction::South => Direction::West,
-                            Direction::West => Direction::North,
-                        };
-                    } else {
-                        current = (x, y, current.2);
-                    }
-                }
+    results.len()
+}
 
-                break;
+fn get_path(
+    lines: &[Vec<char>],
+    start: (usize, usize, Direction),
+    placed_object: Option<(usize, usize)>,
+) -> (Vec<(usize, usize, Direction)>, bool) {
+    let last_x = lines[0].len() - 1;
+    let last_y = lines.len() - 1;
+    let mut current: (usize, usize, Direction) = start;
+    let mut visited: Vec<(usize, usize, Direction)> = vec![];
+    let mut is_loop = false;
+
+    loop {
+        if visited.contains(&current) {
+            is_loop = true;
+
+            break;
+        }
+
+        visited.push(current);
+
+        let (x, y, direction) = &current;
+        let next: (usize, usize) = match direction {
+            Direction::North if *y > 0 => (*x, y - 1),
+            Direction::South if y < &last_y => (*x, y + 1),
+            Direction::East if x < &last_x => (x + 1, *y),
+            Direction::West if *x > 0 => (x - 1, *y),
+            _ => break,
+        };
+
+        let (x, y) = next;
+
+        if lines[y][x] == '#' || placed_object == Some(next) {
+            current.2 = match current.2 {
+                Direction::North => Direction::East,
+                Direction::East => Direction::South,
+                Direction::South => Direction::West,
+                Direction::West => Direction::North,
+            };
+        } else {
+            current = (x, y, current.2);
+        }
+    }
+
+    (visited, is_loop)
+}
+
+fn get_start(lines: &[Vec<char>]) -> (usize, usize, Direction) {
+    for (y, line) in lines.iter().enumerate() {
+        for (x, cell) in line.iter().enumerate() {
+            if cell == &'^' {
+                return (x, y, Direction::North);
             }
         }
     }
 
-    visited.len()
-}
-
-fn part2(_input: Vec<String>) -> usize {
-    todo!()
+    panic!()
 }
 
 fn main() {
@@ -109,6 +161,6 @@ mod tests {
     fn test_part2() {
         let fixture = get_fixture();
 
-        assert_eq!(part2(fixture), 0);
+        assert_eq!(part2(fixture), 6);
     }
 }
