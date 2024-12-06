@@ -9,8 +9,17 @@ enum Direction {
     West,
 }
 
-type Point = (usize, usize);
-type Step = (usize, usize, Direction);
+#[derive(PartialEq, Debug, Copy, Clone, Eq, Hash)]
+struct Point {
+    x: usize,
+    y: usize,
+}
+
+#[derive(PartialEq, Debug, Copy, Clone)]
+struct Step {
+    point: Point,
+    direction: Direction,
+}
 
 fn part1(input: Vec<String>) -> usize {
     let lines: Vec<Vec<char>> = input
@@ -18,7 +27,7 @@ fn part1(input: Vec<String>) -> usize {
         .map(|s| s.chars().collect::<Vec<_>>())
         .collect();
     let (path, _) = get_path(&lines, get_start(&lines), None);
-    let visited = path.iter().map(|(a, b, _d)| (a, b)).unique();
+    let visited = path.iter().map(|step| step.point).unique();
 
     visited.count()
 }
@@ -34,18 +43,13 @@ fn part2(input: Vec<String>) -> usize {
     let (path, _) = get_path(&lines, start, None);
     let results: Vec<Option<Point>> = path
         .par_iter()
-        .map(|(x, y, d)| {
-            let placed_object = match d {
-                Direction::North if *y > 0 => (*x, y - 1),
-                Direction::South if y < &last_y => (*x, y + 1),
-                Direction::East if x < &last_x => (x + 1, *y),
-                Direction::West if *x > 0 => (x - 1, *y),
-                _ => return None,
+        .map(|step| {
+            let placed_object = match get_move(*step, last_y, last_x) {
+                Some(point) => point,
+                None => return None,
             };
 
-            let (a, b) = placed_object;
-
-            if start == (a, b, *d) || lines[b][a] == '#' {
+            if start.point == placed_object || lines[placed_object.y][placed_object.x] == '#' {
                 return None;
             }
 
@@ -78,26 +82,23 @@ fn get_path(lines: &[Vec<char>], start: Step, placed_object: Option<Point>) -> (
 
         visited.push(current);
 
-        let (x, y, direction) = &current;
-        let next: Point = match direction {
-            Direction::North if *y > 0 => (*x, y - 1),
-            Direction::South if y < &last_y => (*x, y + 1),
-            Direction::East if x < &last_x => (x + 1, *y),
-            Direction::West if *x > 0 => (x - 1, *y),
-            _ => break,
+        let next: Point = match get_move(current, last_y, last_x) {
+            Some(point) => point,
+            None => break,
         };
 
-        let (x, y) = next;
-
-        if lines[y][x] == '#' || placed_object == Some(next) {
-            current.2 = match current.2 {
+        if lines[next.y][next.x] == '#' || placed_object == Some(next) {
+            current.direction = match current.direction {
                 Direction::North => Direction::East,
                 Direction::East => Direction::South,
                 Direction::South => Direction::West,
                 Direction::West => Direction::North,
             };
         } else {
-            current = (x, y, current.2);
+            current = Step {
+                point: next,
+                direction: current.direction,
+            };
         }
     }
 
@@ -108,12 +109,37 @@ fn get_start(lines: &[Vec<char>]) -> Step {
     for (y, line) in lines.iter().enumerate() {
         for (x, cell) in line.iter().enumerate() {
             if cell == &'^' {
-                return (x, y, Direction::North);
+                return Step {
+                    point: Point { x, y },
+                    direction: Direction::North,
+                };
             }
         }
     }
 
     panic!()
+}
+
+fn get_move(step: Step, last_y: usize, last_x: usize) -> Option<Point> {
+    match step.direction {
+        Direction::North if step.point.y > 0 => Some(Point {
+            x: step.point.x,
+            y: step.point.y - 1,
+        }),
+        Direction::South if step.point.y < last_y => Some(Point {
+            x: step.point.x,
+            y: step.point.y + 1,
+        }),
+        Direction::East if step.point.x < last_x => Some(Point {
+            x: step.point.x + 1,
+            y: step.point.y,
+        }),
+        Direction::West if step.point.x > 0 => Some(Point {
+            x: step.point.x - 1,
+            y: step.point.y,
+        }),
+        _ => None,
+    }
 }
 
 fn main() {
