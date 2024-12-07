@@ -3,19 +3,19 @@ use rayon::prelude::*;
 
 #[derive(Debug, Clone)]
 enum Operator {
-    MULTIPLY,
-    ADD,
-    CONCAT,
+    Multiply,
+    Add,
+    Concat,
 }
 
 fn part1(input: Vec<String>) -> usize {
-    get_result(input, &[Operator::MULTIPLY, Operator::ADD])
+    get_result(input, &[Operator::Multiply, Operator::Add])
 }
 
 fn part2(input: Vec<String>) -> usize {
     get_result(
         input,
-        &[Operator::MULTIPLY, Operator::ADD, Operator::CONCAT],
+        &[Operator::Multiply, Operator::Add, Operator::Concat],
     )
 }
 
@@ -28,7 +28,7 @@ fn get_result(input: Vec<String>, operators: &[Operator]) -> usize {
 
                 if let Ok(parts) = advent::parse_vec_from_line::<usize>(parts.to_string()) {
                     let operator_combinations = operators
-                        .into_iter()
+                        .iter()
                         .combinations_with_replacement(parts.len() - 1);
 
                     for combo in operator_combinations {
@@ -39,9 +39,9 @@ fn get_result(input: Vec<String>, operators: &[Operator]) -> usize {
 
                             for (i, operator) in combo.iter().enumerate() {
                                 match operator {
-                                    Operator::MULTIPLY => t *= parts[i + 1],
-                                    Operator::ADD => t += parts[i + 1],
-                                    Operator::CONCAT => {
+                                    Operator::Multiply => t *= parts[i + 1],
+                                    Operator::Add => t += parts[i + 1],
+                                    Operator::Concat => {
                                         t = format!("{}{}", t, parts[i + 1]).parse().unwrap()
                                     }
                                 }
