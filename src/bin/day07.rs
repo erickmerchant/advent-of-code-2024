@@ -25,37 +25,34 @@ fn get_result(input: Vec<String>, operators: &[Operator]) -> usize {
         .map(|line| {
             if let Some((total, parts)) = line.split(":").collect_tuple::<(&str, &str)>() {
                 let total = total.trim().parse::<usize>().unwrap();
+                let parts = parts.split_whitespace().collect::<Vec<&str>>();
+                let mut results = vec![parts[0].parse::<usize>().unwrap()];
 
-                if let Ok(parts) = advent::parse_vec_from_line::<usize>(parts.to_string()) {
-                    let operator_combinations = operators
-                        .iter()
-                        .combinations_with_replacement(parts.len() - 1);
+                for part in &parts[1..parts.len()] {
+                    let mut new_results = vec![];
 
-                    for combo in operator_combinations {
-                        let operator_combinations = combo.iter().permutations(combo.len());
-
-                        'combos: for combo in operator_combinations {
-                            let mut t = parts[0];
-
-                            for (i, operator) in combo.iter().enumerate() {
-                                match operator {
-                                    Operator::Multiply => t *= parts[i + 1],
-                                    Operator::Add => t += parts[i + 1],
-                                    Operator::Concat => {
-                                        t = format!("{}{}", t, parts[i + 1]).parse().unwrap()
-                                    }
+                    for result in results {
+                        for operator in operators {
+                            let new_result = match operator {
+                                Operator::Multiply => result * part.parse::<usize>().unwrap(),
+                                Operator::Add => result + part.parse::<usize>().unwrap(),
+                                Operator::Concat => {
+                                    result * 10_usize.pow(part.len() as u32)
+                                        + part.parse::<usize>().unwrap()
                                 }
+                            };
 
-                                if t > total {
-                                    continue 'combos;
-                                }
-                            }
-
-                            if t == total {
-                                return total;
+                            if new_result <= total {
+                                new_results.push(new_result);
                             }
                         }
                     }
+
+                    results = new_results;
+                }
+
+                if results.contains(&total) {
+                    return total;
                 }
             }
 
