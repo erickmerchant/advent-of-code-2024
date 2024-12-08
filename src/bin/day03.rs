@@ -10,8 +10,8 @@ fn part1(input: Vec<String>) -> usize {
 
     for line in input {
         for (_, [a, b]) in MUL_REGEX.captures_iter(&line).map(|c| c.extract()) {
-            let a = a.parse::<usize>().unwrap();
-            let b = b.parse::<usize>().unwrap();
+            let a: usize = a.parse().unwrap();
+            let b: usize = b.parse().unwrap();
 
             result += a * b;
         }

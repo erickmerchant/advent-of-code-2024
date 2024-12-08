@@ -22,10 +22,7 @@ struct Step {
 }
 
 fn part1(input: Vec<String>) -> usize {
-    let lines: Vec<Vec<char>> = input
-        .into_iter()
-        .map(|s| s.chars().collect::<Vec<_>>())
-        .collect();
+    let lines: Vec<Vec<char>> = input.into_iter().map(|s| s.chars().collect()).collect();
     let (path, _) = get_path(&lines, get_start(&lines), None);
     let visited = path.iter().map(|step| step.point).unique();
 
@@ -33,10 +30,7 @@ fn part1(input: Vec<String>) -> usize {
 }
 
 fn part2(input: Vec<String>) -> usize {
-    let lines: Vec<Vec<char>> = input
-        .into_iter()
-        .map(|s| s.chars().collect::<Vec<_>>())
-        .collect();
+    let lines: Vec<Vec<char>> = input.into_iter().map(|s| s.chars().collect()).collect();
     let last_x = lines[0].len() - 1;
     let last_y = lines.len() - 1;
     let start = get_start(&lines);

@@ -24,9 +24,9 @@ fn get_result(input: Vec<String>, operators: &[Operator]) -> usize {
         .par_iter()
         .map(|line| {
             if let Some((total, parts)) = line.split(":").collect_tuple::<(&str, &str)>() {
-                let total = total.trim().parse::<usize>().unwrap();
-                let parts = parts.split_whitespace().collect::<Vec<&str>>();
-                let mut results = vec![parts[0].parse::<usize>().unwrap()];
+                let total: usize = total.trim().parse().unwrap();
+                let parts: Vec<&str> = parts.split_whitespace().collect();
+                let mut results: Vec<usize> = vec![parts[0].parse().unwrap()];
 
                 for part in &parts[1..parts.len()] {
                     let mut new_results = vec![];

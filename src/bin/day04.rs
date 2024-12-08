@@ -1,9 +1,6 @@
 fn part1(input: Vec<String>) -> usize {
     let w = input[0].len();
-    let lines: Vec<Vec<char>> = input
-        .into_iter()
-        .map(|s| s.chars().collect::<Vec<_>>())
-        .collect();
+    let lines: Vec<Vec<char>> = input.into_iter().map(|s| s.chars().collect()).collect();
     let mut result = 0;
 
     for line in lines.clone() {
@@ -83,10 +80,7 @@ fn part1(input: Vec<String>) -> usize {
 
 fn part2(input: Vec<String>) -> usize {
     let w = input[0].len();
-    let lines: Vec<Vec<char>> = input
-        .into_iter()
-        .map(|s| s.chars().collect::<Vec<_>>())
-        .collect();
+    let lines: Vec<Vec<char>> = input.into_iter().map(|s| s.chars().collect()).collect();
     let mut result = 0;
 
     for y in 0..(lines.len() - 2) {

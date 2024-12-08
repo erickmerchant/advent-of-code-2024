@@ -12,7 +12,7 @@ fn both_parts(input: Vec<String>) -> (usize, usize) {
         if line.contains('|') {
             let rule: Rule = line
                 .split('|')
-                .map(|s| s.parse::<usize>().unwrap())
+                .map(|s| s.parse().unwrap())
                 .collect_tuple()
                 .unwrap();
 
@@ -20,10 +20,7 @@ fn both_parts(input: Vec<String>) -> (usize, usize) {
         }
 
         if line.contains(',') {
-            let mut numbers: Vec<usize> = line
-                .split(',')
-                .map(|s| s.parse::<usize>().unwrap())
-                .collect();
+            let mut numbers: Vec<usize> = line.split(',').map(|s| s.parse().unwrap()).collect();
 
             for (a, b) in rules.clone() {
                 if let (Some(a), Some(b)) = (
@@ -61,7 +58,6 @@ fn both_parts(input: Vec<String>) -> (usize, usize) {
 
 fn main() {
     let input = advent::get_input();
-
     let (a, b) = both_parts(input);
 
     println!("{}", a);

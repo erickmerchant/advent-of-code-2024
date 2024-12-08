@@ -2,7 +2,10 @@ fn part1(input: Vec<String>) -> usize {
     let mut result = 0;
 
     for line in input {
-        let parts = advent::parse_vec_from_line::<isize>(line).unwrap();
+        let parts: Vec<isize> = line
+            .split_whitespace()
+            .map(|p| p.parse().unwrap())
+            .collect();
 
         result += check_parts(parts);
     }
@@ -14,7 +17,10 @@ fn part2(input: Vec<String>) -> usize {
     let mut result = 0;
 
     'outer: for line in input {
-        let parts = advent::parse_vec_from_line::<isize>(line).unwrap();
+        let parts: Vec<isize> = line
+            .split_whitespace()
+            .map(|p| p.parse().unwrap())
+            .collect();
         let r = check_parts(parts.clone());
 
         result += r;
