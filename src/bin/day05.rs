@@ -22,19 +22,19 @@ fn both_parts(input: Vec<String>) -> (usize, usize) {
         if line.contains(',') {
             let mut numbers: Vec<usize> = line.split(',').map(|s| s.parse().unwrap()).collect();
 
-            for (a, b) in rules.clone() {
+            for (a, b) in &rules {
                 if let (Some(a), Some(b)) = (
-                    numbers.iter().position(|&x| x == a),
-                    numbers.iter().position(|&x| x == b),
+                    numbers.iter().position(|&x| x == *a),
+                    numbers.iter().position(|&x| x == *b),
                 ) {
                     if a > b {
                         numbers.sort_by(|x, y| {
-                            for (a, b) in rules.clone() {
-                                if x == &a && y == &b {
+                            for (a, b) in &rules {
+                                if *x == *a && *y == *b {
                                     return Ordering::Less;
                                 }
 
-                                if x == &b && y == &a {
+                                if *x == *b && *y == *a {
                                     return Ordering::Greater;
                                 }
                             }

@@ -3,7 +3,7 @@ fn part1(input: Vec<String>) -> usize {
     let lines: Vec<Vec<char>> = input.into_iter().map(|s| s.chars().collect()).collect();
     let mut result = 0;
 
-    for line in lines.clone() {
+    for line in &lines {
         for x in 0..(w - 3) {
             if line[x] == 'X' && line[x + 1] == 'M' && line[x + 2] == 'A' && line[x + 3] == 'S' {
                 result += 1;

@@ -2,12 +2,12 @@ fn part1(input: Vec<String>) -> usize {
     let mut result = 0;
 
     for line in input {
-        let parts: Vec<isize> = line
+        let mut parts: Vec<isize> = line
             .split_whitespace()
             .map(|p| p.parse().unwrap())
             .collect();
 
-        result += check_parts(parts);
+        result += check_parts(&mut parts);
     }
 
     result
@@ -21,7 +21,7 @@ fn part2(input: Vec<String>) -> usize {
             .split_whitespace()
             .map(|p| p.parse().unwrap())
             .collect();
-        let r = check_parts(parts.clone());
+        let r = check_parts(&mut parts.clone());
 
         result += r;
 
@@ -34,7 +34,7 @@ fn part2(input: Vec<String>) -> usize {
 
             parts.remove(i);
 
-            let r = check_parts(parts);
+            let r = check_parts(&mut parts);
 
             result += r;
 
@@ -47,9 +47,7 @@ fn part2(input: Vec<String>) -> usize {
     result
 }
 
-fn check_parts(parts: Vec<isize>) -> usize {
-    let mut parts = parts.clone();
-
+fn check_parts(parts: &mut Vec<isize>) -> usize {
     if !parts.is_sorted() {
         parts.reverse();
 
@@ -64,7 +62,7 @@ fn check_parts(parts: Vec<isize>) -> usize {
         prev = match prev {
             None => Some(part),
             Some(prev) => {
-                let diff = (prev - part).abs();
+                let diff = (*prev - *part).abs();
 
                 if !(1..=3).contains(&diff) {
                     return 0;
