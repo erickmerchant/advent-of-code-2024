@@ -17,7 +17,7 @@ fn part1(input: Vec<String>) -> usize {
                 continue;
             }
 
-            let antenna = antennas.entry(*c).or_insert(Vec::new());
+            let antenna = antennas.entry(*c).or_default();
 
             for (xx, yy) in antenna.iter() {
                 let x_delta = (x - *xx).abs();
@@ -67,7 +67,7 @@ fn part2(input: Vec<String>) -> usize {
                 continue;
             }
 
-            let antenna = antennas.entry(*c).or_insert(Vec::new());
+            let antenna = antennas.entry(*c).or_default();
 
             for (xx, yy) in antenna.iter() {
                 antinodes.insert((*xx, *yy));
