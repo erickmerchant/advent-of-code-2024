@@ -1,114 +1,158 @@
-use std::collections::{HashMap, HashSet};
+use std::{
+    collections::{HashMap, HashSet},
+    ops::{Div, Sub},
+};
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+struct Point {
+    pub x: isize,
+    pub y: isize,
+}
+
+impl Div<isize> for Point {
+    type Output = Self;
+
+    fn div(self, rhs: isize) -> Self::Output {
+        Self::new(self.x / rhs, self.y / rhs)
+    }
+}
+
+impl Point {
+    fn new(x: isize, y: isize) -> Self {
+        Self { x, y }
+    }
+
+    fn step(&self, a: Self, b: Self) -> Self {
+        Self::new(
+            if a.x < b.x {
+                a.x - self.x
+            } else {
+                a.x + self.x
+            },
+            if a.y < b.y {
+                a.y - self.y
+            } else {
+                a.y + self.y
+            },
+        )
+    }
+
+    fn abs(&self) -> Self {
+        Self::new(self.x.abs(), self.y.abs())
+    }
+}
+
+impl Sub for Point {
+    type Output = Self;
+
+    fn sub(self, rhs: Self) -> Self::Output {
+        Self::new(self.x - rhs.x, self.y - rhs.y)
+    }
+}
+
+struct Lines {
+    pub points: Vec<(char, Point)>,
+    last: Point,
+}
+
+impl Lines {
+    fn new(input: Vec<String>) -> Self {
+        let lines: Vec<Vec<char>> = input.into_iter().map(|s| s.chars().collect()).collect();
+        let mut points: Vec<(char, Point)> = vec![];
+
+        for (y, line) in lines.iter().enumerate() {
+            let y = y as isize;
+
+            for (x, c) in line.iter().enumerate() {
+                let x = x as isize;
+                let point = Point::new(x, y);
+
+                if *c == '.' {
+                    continue;
+                }
+
+                points.push((*c, point));
+            }
+        }
+
+        let last = Point::new((lines[0].len() - 1) as isize, (lines.len() - 1) as isize);
+
+        Self { points, last }
+    }
+
+    fn contains(&self, point: Point) -> bool {
+        point.x >= 0 && point.y >= 0 && point.x <= self.last.x && point.y <= self.last.y
+    }
+}
 
 fn part1(input: Vec<String>) -> usize {
-    let lines: Vec<Vec<char>> = input.into_iter().map(|s| s.chars().collect()).collect();
-    let last_x = (lines[0].len() - 1) as isize;
-    let last_y = (lines.len() - 1) as isize;
-    let mut antennas = HashMap::<char, Vec<(isize, isize)>>::new();
-    let mut antinodes = HashSet::<(isize, isize)>::new();
+    let lines = Lines::new(input);
+    let mut antennas = HashMap::<char, Vec<Point>>::new();
+    let mut antinodes = HashSet::<Point>::new();
 
-    for (y, line) in lines.iter().enumerate() {
-        let y = y as isize;
+    for (c, current) in lines.points.iter() {
+        let antenna = antennas.entry(*c).or_default();
 
-        for (x, c) in line.iter().enumerate() {
-            let x = x as isize;
+        for previous in antenna.iter() {
+            let delta = (*current - *previous).abs();
+            let potentials = [
+                delta.step(*current, *previous),
+                delta.step(*previous, *current),
+            ];
 
-            if *c == '.' {
-                continue;
-            }
-
-            let antenna = antennas.entry(*c).or_default();
-
-            for (xx, yy) in antenna.iter() {
-                let x_delta = (x - *xx).abs();
-                let y_delta = (y - *yy).abs();
-
-                let potentials = [
-                    (
-                        if x < *xx { x - x_delta } else { x + x_delta },
-                        if y < *yy { y - y_delta } else { y + y_delta },
-                    ),
-                    (
-                        if *xx < x { xx - x_delta } else { xx + x_delta },
-                        if *yy < y { yy - y_delta } else { yy + y_delta },
-                    ),
-                ];
-
-                for (x, y) in potentials.iter() {
-                    if *x < 0 || *y < 0 || *x > last_x || *y > last_y {
-                        continue;
-                    }
-
-                    antinodes.insert((*x, *y));
+            for potential in potentials.iter() {
+                if !lines.contains(*potential) {
+                    continue;
                 }
-            }
 
-            antenna.push((x, y));
+                antinodes.insert(*potential);
+            }
         }
+
+        antenna.push(*current);
     }
 
     antinodes.len()
 }
 
 fn part2(input: Vec<String>) -> usize {
-    let lines: Vec<Vec<char>> = input.into_iter().map(|s| s.chars().collect()).collect();
-    let last_x = (lines[0].len() - 1) as isize;
-    let last_y = (lines.len() - 1) as isize;
-    let mut antennas = HashMap::<char, Vec<(isize, isize)>>::new();
-    let mut antinodes = HashSet::<(isize, isize)>::new();
+    let lines = Lines::new(input);
+    let mut antennas = HashMap::<char, Vec<Point>>::new();
+    let mut antinodes = HashSet::<Point>::new();
 
-    for (y, line) in lines.iter().enumerate() {
-        let y = y as isize;
+    for (c, current) in lines.points.iter() {
+        let antenna = antennas.entry(*c).or_default();
 
-        for (x, c) in line.iter().enumerate() {
-            let x = x as isize;
+        for previous in antenna.iter() {
+            let delta = (*current - *previous).abs();
+            let gcd = num::integer::gcd(delta.x, delta.y);
+            let delta = delta / gcd;
+            let mut point = *current;
 
-            if *c == '.' {
-                continue;
-            }
-
-            let antenna = antennas.entry(*c).or_default();
-
-            for (xx, yy) in antenna.iter() {
-                antinodes.insert((*xx, *yy));
-                antinodes.insert((x, y));
-
-                let x_delta = (x - *xx).abs();
-                let y_delta = (y - *yy).abs();
-                let gcd = num::integer::gcd(x_delta, y_delta);
-                let x_delta = x_delta / gcd;
-                let y_delta = y_delta / gcd;
-                let mut px = if x < *xx { x - x_delta } else { x + x_delta };
-                let mut py = if y < *yy { y - y_delta } else { y + y_delta };
-
-                loop {
-                    if px < 0 || py < 0 || px > last_x || py > last_y {
-                        break;
-                    }
-
-                    antinodes.insert((px, py));
-
-                    px = if x < *xx { px - x_delta } else { px + x_delta };
-                    py = if y < *yy { py - y_delta } else { py + y_delta };
+            loop {
+                if !lines.contains(point) {
+                    break;
                 }
 
-                let mut px = if *xx < x { xx - x_delta } else { xx + x_delta };
-                let mut py = if *yy < y { yy - y_delta } else { yy + y_delta };
+                antinodes.insert(point);
 
-                loop {
-                    if px < 0 || py < 0 || px > last_x || py > last_y {
-                        break;
-                    }
-
-                    antinodes.insert((px, py));
-
-                    px = if *xx < x { px - x_delta } else { px + x_delta };
-                    py = if *yy < y { py - y_delta } else { py + y_delta };
-                }
+                point = delta.step(point, *previous);
             }
 
-            antenna.push((x, y));
+            let mut point = *previous;
+
+            loop {
+                if !lines.contains(point) {
+                    break;
+                }
+
+                antinodes.insert(point);
+
+                point = delta.step(point, *current);
+            }
         }
+
+        antenna.push(*current);
     }
 
     antinodes.len()
