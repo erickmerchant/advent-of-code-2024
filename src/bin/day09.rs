@@ -58,6 +58,11 @@ enum Block {
     Free(usize),
 }
 
+struct Span {
+    pub id: usize,
+    pub count: usize,
+}
+
 fn part2(input: String) -> usize {
     let input = input
         .chars()
@@ -66,8 +71,8 @@ fn part2(input: String) -> usize {
     let mut result: Vec<Block> = vec![];
     let mut is_on = true;
     let mut id = 0;
-    let mut free_map: Vec<(usize, usize)> = vec![];
-    let mut used_map: Vec<(usize, usize)> = vec![];
+    let mut free_map: Vec<Span> = vec![];
+    let mut used_map: Vec<Span> = vec![];
 
     for count in input {
         if is_on {
@@ -75,7 +80,7 @@ fn part2(input: String) -> usize {
                 result.push(Block::Used(id));
             }
 
-            used_map.push((id, count));
+            used_map.push(Span { id, count });
 
             id += 1;
         } else {
@@ -83,19 +88,18 @@ fn part2(input: String) -> usize {
                 result.push(Block::Free(id));
             }
 
-            free_map.push((id, count));
+            free_map.push(Span { id, count });
         }
 
         is_on = !is_on;
     }
 
-    for (id, count) in used_map.iter().rev() {
-        if let Some(index_of_free) = free_map.iter().position(|(_, c)| c >= count) {
+    for span in used_map.iter().rev() {
+        if let Some(index_of_free) = free_map.iter().position(|s| s.count >= span.count) {
             let free = free_map.get_mut(index_of_free).unwrap();
-            let free_id = free.0;
-            let mut to_move_count = *count;
+            let mut to_move_count = span.count;
 
-            free.1 -= count;
+            free.count -= span.count;
 
             loop {
                 if to_move_count == 0 {
@@ -105,14 +109,14 @@ fn part2(input: String) -> usize {
                 if let (Some(a), Some(b)) = (
                     result.iter().position(|r| {
                         if let Block::Free(i) = r {
-                            *i == free_id
+                            *i == free.id
                         } else {
                             false
                         }
                     }),
                     result.iter().rposition(|r| {
                         if let Block::Used(i) = r {
-                            *i == *id
+                            *i == span.id
                         } else {
                             false
                         }
