@@ -8,20 +8,20 @@ fn part1(input: String) -> usize {
     let mut to_move_count = 0;
     let mut id = 0;
 
-    for d in input {
+    for count in input {
+        let new_result;
+
         if is_on {
-            for _ in 0..d {
-                result.push(Some(id));
-            }
+            new_result = Some(id);
 
             id += 1;
         } else {
-            for _ in 0..d {
-                result.push(None);
-            }
+            new_result = None;
 
-            to_move_count += d;
+            to_move_count += count;
         }
+
+        result.append(&mut vec![new_result; count]);
 
         is_on = !is_on;
     }
@@ -52,7 +52,7 @@ fn part1(input: String) -> usize {
     total
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 enum Block {
     Used(usize),
     Free(usize),
@@ -75,21 +75,21 @@ fn part2(input: String) -> usize {
     let mut used_map: Vec<Span> = vec![];
 
     for count in input {
+        let new_result;
+
         if is_on {
-            for _ in 0..count {
-                result.push(Block::Used(id));
-            }
+            new_result = Block::Used(id);
 
             used_map.push(Span { id, count });
 
             id += 1;
         } else {
-            for _ in 0..count {
-                result.push(Block::Free(id));
-            }
+            new_result = Block::Free(id);
 
             free_map.push(Span { id, count });
         }
+
+        result.append(&mut vec![new_result; count]);
 
         is_on = !is_on;
     }
