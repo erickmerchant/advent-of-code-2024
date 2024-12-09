@@ -92,7 +92,6 @@ fn part2(input: String) -> usize {
     for (id, count) in used_map.iter().rev() {
         if let Some(index_of_free) = free_map.iter().position(|(_, c)| c >= count) {
             let free = free_map.get_mut(index_of_free).unwrap();
-
             let free_id = free.0;
             let mut to_move_count = *count;
 
