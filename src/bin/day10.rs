@@ -30,7 +30,7 @@ fn get_grid(input: Vec<String>) -> Vec<Vec<Node>> {
         grid.push(row);
     }
 
-    for step in (0_u32..=8_u32).rev() {
+    for step in (0..=8).rev() {
         let mut next_trails = vec![];
 
         for (key, x, y) in trails.clone() {
