@@ -1,7 +1,6 @@
-use num::{BigInt, FromPrimitive};
 use rayon::prelude::*;
 
-fn get_sum(stones: &[BigInt], iterations: usize) -> usize {
+fn get_sum(stones: &[usize], iterations: usize) -> usize {
     if iterations == 0 {
         return stones.len();
     }
@@ -9,16 +8,17 @@ fn get_sum(stones: &[BigInt], iterations: usize) -> usize {
     stones
         .par_iter()
         .map(|stone| {
-            if *stone == BigInt::ZERO {
-                return get_sum(&[FromPrimitive::from_usize(1).unwrap()], iterations - 1);
+            if *stone == 0 {
+                return get_sum(&[1], iterations - 1);
             }
 
-            let stone_as_string = stone.to_str_radix(10);
+            let length = stone.ilog10() + 1;
 
-            if stone_as_string.len() % 2 == 0 {
-                let (a, b) = stone_as_string.split_at(stone_as_string.len() / 2);
+            if length % 2 == 0 {
+                let left = stone / 10usize.pow(length / 2);
+                let right = stone % 10usize.pow(length / 2);
 
-                return get_sum(&[a.parse().unwrap(), b.parse().unwrap()], iterations - 1);
+                return get_sum(&[left, right], iterations - 1);
             }
 
             get_sum(&[stone * 2024], iterations - 1)
@@ -27,7 +27,7 @@ fn get_sum(stones: &[BigInt], iterations: usize) -> usize {
 }
 
 fn get_result(input: String, iterations: usize) -> usize {
-    let stones: Vec<BigInt> = input
+    let stones: Vec<usize> = input
         .split_whitespace()
         .map(|p| p.parse().unwrap())
         .collect();
@@ -39,16 +39,11 @@ fn part1(input: String) -> usize {
     get_result(input, 25)
 }
 
-// fn part2(input: String) -> usize {
-//     get_result(input, 75)
-// }
-
 fn main() {
     let input = advent::get_input();
     let input = input.first().unwrap();
 
     println!("{}", part1(input.clone()));
-    // println!("{}", part2(input.clone()));
 }
 
 #[cfg(test)]
