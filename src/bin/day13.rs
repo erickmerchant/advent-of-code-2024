@@ -46,9 +46,9 @@ fn part1(input: String) -> usize {
     let mut total_cost = 0;
 
     for game in games {
-        for a in 0..=1000 {
-            let mut prev_cost = usize::MAX;
+        let mut prev_cost = usize::MAX;
 
+        for a in 0..=1000 {
             for b in 0..=1000 {
                 let cost = (a * 3) + b;
                 let x = (game.button_a.x * a) + (game.button_b.x * b);
@@ -58,10 +58,10 @@ fn part1(input: String) -> usize {
                     prev_cost = cost;
                 }
             }
+        }
 
-            if prev_cost < usize::MAX {
-                total_cost += prev_cost;
-            }
+        if prev_cost < usize::MAX {
+            total_cost += prev_cost;
         }
     }
 
