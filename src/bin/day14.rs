@@ -9,7 +9,6 @@ fn get_answer(input: Vec<String>, (width, height): (isize, isize)) -> usize {
     let mut ne_total = 0;
     let mut se_total = 0;
     let mut sw_total = 0;
-
     let max_w_x = width / 2;
     let min_e_x = max_w_x + (width % 2) - 1;
     let max_n_y = height / 2;
@@ -22,13 +21,13 @@ fn get_answer(input: Vec<String>, (width, height): (isize, isize)) -> usize {
             let x_velocity: isize = c.parse().unwrap();
             let y_velocity: isize = d.parse().unwrap();
 
-            x = (x_velocity * 100) + x;
+            x += x_velocity * 100;
 
             while x < 0 {
                 x += width;
             }
 
-            y = (y_velocity * 100) + y;
+            y += y_velocity * 100;
 
             while y < 0 {
                 y += height;
