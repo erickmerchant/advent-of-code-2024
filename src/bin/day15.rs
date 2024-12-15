@@ -2,19 +2,34 @@ fn get_answer(input: Vec<String>) -> usize {
     let mut grid: Vec<Vec<char>> = vec![];
     let mut grid_done = false;
     let mut directions: Vec<char> = vec![];
+    let mut position = (0, 0);
 
-    for line in input {
+    for (y, line) in input.iter().enumerate() {
         if line.is_empty() {
             grid_done = true;
             continue;
         }
 
-        let mut chars = line.chars().collect();
+        let mut chars: Vec<char> = line.chars().collect();
+
+        if let Some(x) = chars.iter().position(|c| *c == '@') {
+            position = (x, y);
+        }
 
         if !grid_done {
             grid.push(chars);
         } else {
             directions.append(&mut chars);
+        }
+    }
+
+    for direction in directions {
+        match direction {
+            '^' => {}
+            'v' => {}
+            '<' => {}
+            '>' => {}
+            _ => {}
         }
     }
 
