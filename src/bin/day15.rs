@@ -1,8 +1,26 @@
+use std::collections::HashMap;
+
+#[derive(Debug)]
+enum Square {
+    Wall,
+    Box,
+    Open,
+    Robot,
+}
+
+#[derive(Debug, Eq, Hash, PartialEq, Clone)]
+struct Point {
+    x: usize,
+    y: usize,
+}
+
 fn get_answer(input: Vec<String>) -> usize {
-    let mut grid: Vec<Vec<char>> = vec![];
+    let mut grid: HashMap<Point, Square> = HashMap::new();
     let mut grid_done = false;
     let mut directions: Vec<char> = vec![];
-    let mut position = (0, 0);
+    let mut current = Point { x: 0, y: 0 };
+    let last_x = input[0].len() - 1;
+    let last_y = input.len() - 1;
 
     for (y, line) in input.iter().enumerate() {
         if line.is_empty() {
@@ -12,12 +30,26 @@ fn get_answer(input: Vec<String>) -> usize {
 
         let mut chars: Vec<char> = line.chars().collect();
 
-        if let Some(x) = chars.iter().position(|c| *c == '@') {
-            position = (x, y);
-        }
-
         if !grid_done {
-            grid.push(chars);
+            for (x, c) in chars.iter().enumerate() {
+                match c {
+                    '#' => {
+                        grid.insert(Point { x, y }, Square::Wall);
+                    }
+                    'O' => {
+                        grid.insert(Point { x, y }, Square::Box);
+                    }
+                    '.' => {
+                        grid.insert(Point { x, y }, Square::Open);
+                    }
+                    '@' => {
+                        grid.insert(Point { x, y }, Square::Robot);
+
+                        current = Point { x, y };
+                    }
+                    _ => {}
+                }
+            }
         } else {
             directions.append(&mut chars);
         }
@@ -25,18 +57,211 @@ fn get_answer(input: Vec<String>) -> usize {
 
     for direction in directions {
         match direction {
-            '^' => {}
-            'v' => {}
-            '<' => {}
-            '>' => {}
+            '^' => {
+                if current.y == 0 {
+                    continue;
+                }
+
+                let next = Point {
+                    x: current.x,
+                    y: current.y - 1,
+                };
+                let mut next_open = None;
+                let mut next_next = Point {
+                    x: next.x,
+                    y: next.y,
+                };
+
+                loop {
+                    if let Some(&Square::Open) = grid.get(&next_next) {
+                        next_open = Some(next_next.clone());
+                        break;
+                    }
+
+                    if next_next.y == 0 {
+                        break;
+                    }
+
+                    if let Some(&Square::Box) = grid.get(&next_next) {
+                        next_next = Point {
+                            x: next_next.x,
+                            y: next_next.y - 1,
+                        };
+                    } else {
+                        break;
+                    }
+                }
+
+                if let Some(Square::Box) = grid.get(&next) {
+                    if let Some(position) = next_open {
+                        grid.insert(position, Square::Box);
+                        grid.insert(next.clone(), Square::Open);
+                    }
+                }
+
+                if let Some(Square::Open) = grid.get(&next) {
+                    grid.insert(current, Square::Open);
+                    grid.insert(next.clone(), Square::Robot);
+                    current = next;
+                }
+            }
+            'v' => {
+                if current.y == last_y {
+                    continue;
+                }
+
+                let next = Point {
+                    x: current.x,
+                    y: current.y + 1,
+                };
+                let mut next_open = None;
+                let mut next_next = Point {
+                    x: next.x,
+                    y: next.y,
+                };
+
+                loop {
+                    if let Some(&Square::Open) = grid.get(&next_next) {
+                        next_open = Some(next_next.clone());
+                        break;
+                    }
+
+                    if next_next.y == last_y {
+                        break;
+                    }
+
+                    if let Some(&Square::Box) = grid.get(&next_next) {
+                        next_next = Point {
+                            x: next_next.x,
+                            y: next_next.y + 1,
+                        };
+                    } else {
+                        break;
+                    }
+                }
+
+                if let Some(Square::Box) = grid.get(&next) {
+                    if let Some(position) = next_open {
+                        grid.insert(position, Square::Box);
+                        grid.insert(next.clone(), Square::Open);
+                    }
+                }
+
+                if let Some(Square::Open) = grid.get(&next) {
+                    grid.insert(current, Square::Open);
+                    grid.insert(next.clone(), Square::Robot);
+                    current = next;
+                }
+            }
+            '<' => {
+                if current.x == 0 {
+                    continue;
+                }
+
+                let next = Point {
+                    x: current.x - 1,
+                    y: current.y,
+                };
+                let mut next_open = None;
+                let mut next_next = Point {
+                    x: next.x,
+                    y: next.y,
+                };
+
+                loop {
+                    if let Some(&Square::Open) = grid.get(&next_next) {
+                        next_open = Some(next_next.clone());
+                        break;
+                    }
+
+                    if next_next.x == 0 {
+                        break;
+                    }
+
+                    if let Some(&Square::Box) = grid.get(&next_next) {
+                        next_next = Point {
+                            x: next_next.x - 1,
+                            y: next_next.y,
+                        };
+                    } else {
+                        break;
+                    }
+                }
+
+                if let Some(Square::Box) = grid.get(&next) {
+                    if let Some(position) = next_open {
+                        grid.insert(position, Square::Box);
+                        grid.insert(next.clone(), Square::Open);
+                    }
+                }
+
+                if let Some(Square::Open) = grid.get(&next) {
+                    grid.insert(current, Square::Open);
+                    grid.insert(next.clone(), Square::Robot);
+                    current = next;
+                }
+            }
+            '>' => {
+                if current.x == last_x {
+                    continue;
+                }
+
+                let next = Point {
+                    x: current.x + 1,
+                    y: current.y,
+                };
+                let mut next_open = None;
+                let mut next_next = Point {
+                    x: next.x,
+                    y: next.y,
+                };
+
+                loop {
+                    if let Some(&Square::Open) = grid.get(&next_next) {
+                        next_open = Some(next_next.clone());
+                        break;
+                    }
+
+                    if next_next.x == last_x {
+                        break;
+                    }
+
+                    if let Some(&Square::Box) = grid.get(&next_next) {
+                        next_next = Point {
+                            x: next_next.x + 1,
+                            y: next_next.y,
+                        };
+                    } else {
+                        break;
+                    }
+                }
+
+                if let Some(Square::Box) = grid.get(&next) {
+                    if let Some(position) = next_open {
+                        grid.insert(position, Square::Box);
+                        grid.insert(next.clone(), Square::Open);
+                    }
+                }
+
+                if let Some(Square::Open) = grid.get(&next) {
+                    grid.insert(current, Square::Open);
+                    grid.insert(next.clone(), Square::Robot);
+                    current = next;
+                }
+            }
             _ => {}
         }
     }
 
-    // println!("{:?}", grid);
-    // println!("{:?}", directions);
+    let mut total = 0;
 
-    0
+    for (point, square) in grid {
+        if let Square::Box = square {
+            total += (point.y * 100) + point.x;
+        }
+    }
+
+    total
 }
 
 fn main() {
