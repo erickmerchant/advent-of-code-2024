@@ -65,7 +65,6 @@ fn get_grid(input: Vec<String>) -> Vec<Vec<Node>> {
 
 fn part1(input: Vec<String>) -> usize {
     let mut result = 0;
-
     let grid = get_grid(input);
 
     for row in grid {
@@ -81,7 +80,6 @@ fn part1(input: Vec<String>) -> usize {
 
 fn part2(input: Vec<String>) -> usize {
     let mut result = 0;
-
     let grid = get_grid(input);
 
     for row in grid {
