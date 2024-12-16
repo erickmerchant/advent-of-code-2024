@@ -32,23 +32,19 @@ fn get_answer(input: Vec<String>) -> usize {
 
         if !grid_done {
             for (x, c) in chars.iter().enumerate() {
-                match c {
-                    '#' => {
-                        grid.insert(Point { x, y }, Square::Wall);
-                    }
-                    'O' => {
-                        grid.insert(Point { x, y }, Square::Box);
-                    }
-                    '.' => {
-                        grid.insert(Point { x, y }, Square::Open);
-                    }
+                let square = match c {
+                    '#' => Square::Wall,
+                    'O' => Square::Box,
+                    '.' => Square::Open,
                     '@' => {
-                        grid.insert(Point { x, y }, Square::Robot);
-
                         current = Point { x, y };
+
+                        Square::Robot
                     }
-                    _ => {}
-                }
+                    _ => panic!(),
+                };
+
+                grid.insert(Point { x, y }, square);
             }
         } else {
             directions.append(&mut chars);
@@ -56,200 +52,63 @@ fn get_answer(input: Vec<String>) -> usize {
     }
 
     for direction in directions {
-        match direction {
-            '^' => {
-                if current.y == 0 {
-                    continue;
-                }
+        let (delta_x, delta_y) = match direction {
+            '^' => (0, -1),
+            'v' => (0, 1),
+            '<' => (-1, 0),
+            '>' => (1, 0),
+            _ => continue,
+        };
 
-                let next = Point {
-                    x: current.x,
-                    y: current.y - 1,
-                };
-                let mut next_open = None;
-                let mut next_next = Point {
-                    x: next.x,
-                    y: next.y,
-                };
+        if current.y == 0 || current.y >= last_y || current.x == 0 || current.x >= last_x {
+            continue;
+        }
 
-                loop {
-                    if let Some(&Square::Open) = grid.get(&next_next) {
-                        next_open = Some(next_next.clone());
-                        break;
-                    }
+        let next = Point {
+            x: (current.x as isize + delta_x) as usize,
+            y: (current.y as isize + delta_y) as usize,
+        };
+        let mut next_open = None;
+        let mut next_next = Point {
+            x: next.x,
+            y: next.y,
+        };
 
-                    if next_next.y == 0 {
-                        break;
-                    }
-
-                    if let Some(&Square::Box) = grid.get(&next_next) {
-                        next_next = Point {
-                            x: next_next.x,
-                            y: next_next.y - 1,
-                        };
-                    } else {
-                        break;
-                    }
-                }
-
-                if let Some(Square::Box) = grid.get(&next) {
-                    if let Some(position) = next_open {
-                        grid.insert(position, Square::Box);
-                        grid.insert(next.clone(), Square::Open);
-                    }
-                }
-
-                if let Some(Square::Open) = grid.get(&next) {
-                    grid.insert(current, Square::Open);
-                    grid.insert(next.clone(), Square::Robot);
-                    current = next;
-                }
+        loop {
+            if let Some(&Square::Open) = grid.get(&next_next) {
+                next_open = Some(next_next.clone());
+                break;
             }
-            'v' => {
-                if current.y == last_y {
-                    continue;
-                }
 
-                let next = Point {
-                    x: current.x,
-                    y: current.y + 1,
-                };
-                let mut next_open = None;
-                let mut next_next = Point {
-                    x: next.x,
-                    y: next.y,
-                };
-
-                loop {
-                    if let Some(&Square::Open) = grid.get(&next_next) {
-                        next_open = Some(next_next.clone());
-                        break;
-                    }
-
-                    if next_next.y == last_y {
-                        break;
-                    }
-
-                    if let Some(&Square::Box) = grid.get(&next_next) {
-                        next_next = Point {
-                            x: next_next.x,
-                            y: next_next.y + 1,
-                        };
-                    } else {
-                        break;
-                    }
-                }
-
-                if let Some(Square::Box) = grid.get(&next) {
-                    if let Some(position) = next_open {
-                        grid.insert(position, Square::Box);
-                        grid.insert(next.clone(), Square::Open);
-                    }
-                }
-
-                if let Some(Square::Open) = grid.get(&next) {
-                    grid.insert(current, Square::Open);
-                    grid.insert(next.clone(), Square::Robot);
-                    current = next;
-                }
+            if next_next.y == 0
+                || next_next.y >= last_y
+                || next_next.x == 0
+                || next_next.x >= last_x
+            {
+                break;
             }
-            '<' => {
-                if current.x == 0 {
-                    continue;
-                }
 
-                let next = Point {
-                    x: current.x - 1,
-                    y: current.y,
+            if let Some(&Square::Box) = grid.get(&next_next) {
+                next_next = Point {
+                    x: (next_next.x as isize + delta_x) as usize,
+                    y: (next_next.y as isize + delta_y) as usize,
                 };
-                let mut next_open = None;
-                let mut next_next = Point {
-                    x: next.x,
-                    y: next.y,
-                };
-
-                loop {
-                    if let Some(&Square::Open) = grid.get(&next_next) {
-                        next_open = Some(next_next.clone());
-                        break;
-                    }
-
-                    if next_next.x == 0 {
-                        break;
-                    }
-
-                    if let Some(&Square::Box) = grid.get(&next_next) {
-                        next_next = Point {
-                            x: next_next.x - 1,
-                            y: next_next.y,
-                        };
-                    } else {
-                        break;
-                    }
-                }
-
-                if let Some(Square::Box) = grid.get(&next) {
-                    if let Some(position) = next_open {
-                        grid.insert(position, Square::Box);
-                        grid.insert(next.clone(), Square::Open);
-                    }
-                }
-
-                if let Some(Square::Open) = grid.get(&next) {
-                    grid.insert(current, Square::Open);
-                    grid.insert(next.clone(), Square::Robot);
-                    current = next;
-                }
+            } else {
+                break;
             }
-            '>' => {
-                if current.x == last_x {
-                    continue;
-                }
+        }
 
-                let next = Point {
-                    x: current.x + 1,
-                    y: current.y,
-                };
-                let mut next_open = None;
-                let mut next_next = Point {
-                    x: next.x,
-                    y: next.y,
-                };
-
-                loop {
-                    if let Some(&Square::Open) = grid.get(&next_next) {
-                        next_open = Some(next_next.clone());
-                        break;
-                    }
-
-                    if next_next.x == last_x {
-                        break;
-                    }
-
-                    if let Some(&Square::Box) = grid.get(&next_next) {
-                        next_next = Point {
-                            x: next_next.x + 1,
-                            y: next_next.y,
-                        };
-                    } else {
-                        break;
-                    }
-                }
-
-                if let Some(Square::Box) = grid.get(&next) {
-                    if let Some(position) = next_open {
-                        grid.insert(position, Square::Box);
-                        grid.insert(next.clone(), Square::Open);
-                    }
-                }
-
-                if let Some(Square::Open) = grid.get(&next) {
-                    grid.insert(current, Square::Open);
-                    grid.insert(next.clone(), Square::Robot);
-                    current = next;
-                }
+        if let Some(Square::Box) = grid.get(&next) {
+            if let Some(position) = next_open {
+                grid.insert(position, Square::Box);
+                grid.insert(next.clone(), Square::Open);
             }
-            _ => {}
+        }
+
+        if let Some(Square::Open) = grid.get(&next) {
+            grid.insert(current, Square::Open);
+            grid.insert(next.clone(), Square::Robot);
+            current = next;
         }
     }
 
