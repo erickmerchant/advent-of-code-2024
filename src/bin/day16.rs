@@ -133,12 +133,11 @@ fn get_answer(input: Vec<String>) -> usize {
                     },
                 };
 
-                if let Some((diff_x, diff_y, diff_cost, direction)) = change {
-                    let cost = current.weight.cost + diff_cost;
-
+                if let Some((x, y, cost, direction)) = change {
+                    let cost = current.weight.cost + cost;
                     let position = Position {
-                        x: (current.position.x as isize + diff_x) as usize,
-                        y: (current.position.y as isize + diff_y) as usize,
+                        x: (current.position.x as isize + x) as usize,
+                        y: (current.position.y as isize + y) as usize,
                     };
 
                     if let Some(node) = nodes.get_mut(&position) {
