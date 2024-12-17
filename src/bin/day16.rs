@@ -80,7 +80,7 @@ fn get_answer(input: Vec<String>) -> usize {
         let mut current: Option<Current> = None;
 
         for (position, node) in &nodes {
-            if node.visited == false {
+            if !node.visited {
                 if let Some(weight) = node.clone().weight {
                     if current.is_none() || weight.cost < current.clone().unwrap().weight.cost {
                         current = Some(Current {
