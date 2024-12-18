@@ -1,5 +1,7 @@
 use std::collections::HashMap;
 
+type Cost = usize;
+
 #[derive(Debug, Eq, Hash, PartialEq, Clone, PartialOrd, Ord)]
 enum Direction {
     North,
@@ -12,64 +14,84 @@ enum Direction {
 struct Position {
     x: usize,
     y: usize,
-}
-
-#[derive(Debug, Eq, Hash, PartialEq, Clone)]
-struct Weight {
-    cost: usize,
     direction: Direction,
 }
 
 #[derive(Debug, Eq, Hash, PartialEq, Clone)]
 struct Current {
     position: Position,
-    weight: Weight,
+    cost: Cost,
 }
 
 #[derive(Debug, Eq, Hash, PartialEq, Clone)]
 struct Node {
-    weight: Option<Weight>,
+    cost: Option<Cost>,
     visited: bool,
 }
 
 fn get_answer(input: Vec<String>) -> usize {
     let mut nodes: HashMap<Position, Node> = HashMap::new();
-    let mut end: Option<Position> = None;
+    let mut end: Option<(usize, usize)> = None;
 
     for (y, line) in input.iter().enumerate() {
         for (x, c) in line.chars().enumerate() {
             match c {
                 '.' => {
-                    nodes.insert(
-                        Position { x, y },
-                        Node {
-                            weight: None,
-                            visited: false,
-                        },
-                    );
+                    for direction in [
+                        Direction::North,
+                        Direction::West,
+                        Direction::South,
+                        Direction::East,
+                    ] {
+                        nodes.insert(
+                            Position { x, y, direction },
+                            Node {
+                                cost: None,
+                                visited: false,
+                            },
+                        );
+                    }
                 }
                 'S' => {
-                    nodes.insert(
-                        Position { x, y },
-                        Node {
-                            weight: Some(Weight {
-                                cost: 0,
-                                direction: Direction::East,
-                            }),
-                            visited: false,
-                        },
-                    );
+                    for direction in [
+                        Direction::North,
+                        Direction::West,
+                        Direction::South,
+                        Direction::East,
+                    ] {
+                        nodes.insert(
+                            Position {
+                                x,
+                                y,
+                                direction: direction.clone(),
+                            },
+                            Node {
+                                cost: if direction == Direction::East {
+                                    Some(0)
+                                } else {
+                                    None
+                                },
+                                visited: false,
+                            },
+                        );
+                    }
                 }
                 'E' => {
-                    end = Some(Position { x, y });
-
-                    nodes.insert(
-                        Position { x, y },
-                        Node {
-                            weight: None,
-                            visited: false,
-                        },
-                    );
+                    end = Some((x, y));
+                    for direction in [
+                        Direction::North,
+                        Direction::West,
+                        Direction::South,
+                        Direction::East,
+                    ] {
+                        nodes.insert(
+                            Position { x, y, direction },
+                            Node {
+                                cost: None,
+                                visited: false,
+                            },
+                        );
+                    }
                 }
                 _ => {}
             }
@@ -81,14 +103,11 @@ fn get_answer(input: Vec<String>) -> usize {
 
         for (position, node) in &nodes {
             if !node.visited {
-                if let Some(weight) = node.clone().weight {
-                    if current.is_none() || weight.cost < current.clone().unwrap().weight.cost {
+                if let Some(cost) = node.clone().cost {
+                    if current.is_none() || cost < current.clone().unwrap().cost {
                         current = Some(Current {
-                            position: Position {
-                                x: position.x,
-                                y: position.y,
-                            },
-                            weight,
+                            position: position.clone(),
+                            cost,
                         });
                     }
                 }
@@ -96,7 +115,7 @@ fn get_answer(input: Vec<String>) -> usize {
         }
 
         if let Some(current) = current {
-            if current.position == end.clone().unwrap() {
+            if (current.position.x, current.position.y) == end.unwrap() {
                 break;
             }
 
@@ -106,47 +125,48 @@ fn get_answer(input: Vec<String>) -> usize {
                 Direction::South,
                 Direction::East,
             ] {
-                let change = match current.weight.direction {
+                let change = match current.position.direction {
                     Direction::North => match direction {
-                        Direction::North => Some((0, -1, 1, Direction::North)),
-                        Direction::West => Some((-1, 0, 1001, Direction::West)),
+                        Direction::North => Some((0, -1, Direction::North, 1)),
+                        Direction::West => Some((-1, 0, Direction::West, 1001)),
                         Direction::South => None,
-                        Direction::East => Some((1, 0, 1001, Direction::East)),
+                        Direction::East => Some((1, 0, Direction::East, 1001)),
                     },
                     Direction::West => match direction {
-                        Direction::North => Some((0, -1, 1001, Direction::North)),
-                        Direction::West => Some((-1, 0, 1, Direction::West)),
-                        Direction::South => Some((0, 1, 1001, Direction::South)),
+                        Direction::North => Some((0, -1, Direction::North, 1001)),
+                        Direction::West => Some((-1, 0, Direction::West, 1)),
+                        Direction::South => Some((0, 1, Direction::South, 1001)),
                         Direction::East => None,
                     },
                     Direction::South => match direction {
                         Direction::North => None,
-                        Direction::West => Some((-1, 0, 1001, Direction::West)),
-                        Direction::South => Some((0, 1, 1, Direction::South)),
-                        Direction::East => Some((1, 0, 1001, Direction::East)),
+                        Direction::West => Some((-1, 0, Direction::West, 1001)),
+                        Direction::South => Some((0, 1, Direction::South, 1)),
+                        Direction::East => Some((1, 0, Direction::East, 1001)),
                     },
                     Direction::East => match direction {
-                        Direction::North => Some((0, -1, 1001, Direction::North)),
+                        Direction::North => Some((0, -1, Direction::North, 1001)),
                         Direction::West => None,
-                        Direction::South => Some((0, 1, 1001, Direction::South)),
-                        Direction::East => Some((1, 0, 1, Direction::East)),
+                        Direction::South => Some((0, 1, Direction::South, 1001)),
+                        Direction::East => Some((1, 0, Direction::East, 1)),
                     },
                 };
 
-                if let Some((x, y, cost, direction)) = change {
-                    let cost = current.weight.cost + cost;
+                if let Some((x, y, direction, cost)) = change {
+                    let cost = current.cost + cost;
                     let position = Position {
                         x: (current.position.x as isize + x) as usize,
                         y: (current.position.y as isize + y) as usize,
+                        direction,
                     };
 
                     if let Some(node) = nodes.get_mut(&position) {
-                        if let Some(weight) = node.weight.clone() {
-                            if cost < weight.cost {
-                                node.weight = Some(Weight { cost, direction });
+                        if let Some(node_cost) = node.cost {
+                            if cost < node_cost {
+                                node.cost = Some(cost);
                             }
                         } else {
-                            node.weight = Some(Weight { cost, direction });
+                            node.cost = Some(cost);
                         }
                     }
                 }
@@ -160,11 +180,26 @@ fn get_answer(input: Vec<String>) -> usize {
         }
     }
 
-    if let Some(end) = end {
-        nodes.get(&end).unwrap().clone().weight.unwrap().cost
-    } else {
-        usize::MAX
+    let mut result = usize::MAX;
+
+    if let Some((x, y)) = end {
+        for direction in [
+            Direction::North,
+            Direction::West,
+            Direction::South,
+            Direction::East,
+        ] {
+            if let Some(node) = nodes.get(&Position { x, y, direction }) {
+                if let Some(cost) = node.clone().cost {
+                    if cost < result {
+                        result = cost;
+                    }
+                }
+            }
+        }
     }
+
+    result
 }
 
 fn main() {
