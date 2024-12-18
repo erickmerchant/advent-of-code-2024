@@ -78,6 +78,7 @@ fn get_answer(input: Vec<String>) -> usize {
                 }
                 'E' => {
                     end = Some((x, y));
+
                     for direction in [
                         Direction::North,
                         Direction::West,
@@ -119,55 +120,44 @@ fn get_answer(input: Vec<String>) -> usize {
                 break;
             }
 
-            for direction in [
-                Direction::North,
-                Direction::West,
-                Direction::South,
-                Direction::East,
-            ] {
-                let change = match current.position.direction {
-                    Direction::North => match direction {
-                        Direction::North => Some((0, -1, Direction::North, 1)),
-                        Direction::West => Some((-1, 0, Direction::West, 1001)),
-                        Direction::South => None,
-                        Direction::East => Some((1, 0, Direction::East, 1001)),
-                    },
-                    Direction::West => match direction {
-                        Direction::North => Some((0, -1, Direction::North, 1001)),
-                        Direction::West => Some((-1, 0, Direction::West, 1)),
-                        Direction::South => Some((0, 1, Direction::South, 1001)),
-                        Direction::East => None,
-                    },
-                    Direction::South => match direction {
-                        Direction::North => None,
-                        Direction::West => Some((-1, 0, Direction::West, 1001)),
-                        Direction::South => Some((0, 1, Direction::South, 1)),
-                        Direction::East => Some((1, 0, Direction::East, 1001)),
-                    },
-                    Direction::East => match direction {
-                        Direction::North => Some((0, -1, Direction::North, 1001)),
-                        Direction::West => None,
-                        Direction::South => Some((0, 1, Direction::South, 1001)),
-                        Direction::East => Some((1, 0, Direction::East, 1)),
-                    },
+            let changes = match current.position.direction {
+                Direction::North => [
+                    (0, -1, Direction::North, 1),
+                    (-1, 0, Direction::West, 1001),
+                    (1, 0, Direction::East, 1001),
+                ],
+                Direction::West => [
+                    (0, -1, Direction::North, 1001),
+                    (-1, 0, Direction::West, 1),
+                    (0, 1, Direction::South, 1001),
+                ],
+                Direction::South => [
+                    (-1, 0, Direction::West, 1001),
+                    (0, 1, Direction::South, 1),
+                    (1, 0, Direction::East, 1001),
+                ],
+                Direction::East => [
+                    (0, -1, Direction::North, 1001),
+                    (0, 1, Direction::South, 1001),
+                    (1, 0, Direction::East, 1),
+                ],
+            };
+
+            for (x, y, direction, cost) in changes {
+                let cost = current.cost + cost;
+                let position = Position {
+                    x: (current.position.x as isize + x) as usize,
+                    y: (current.position.y as isize + y) as usize,
+                    direction,
                 };
 
-                if let Some((x, y, direction, cost)) = change {
-                    let cost = current.cost + cost;
-                    let position = Position {
-                        x: (current.position.x as isize + x) as usize,
-                        y: (current.position.y as isize + y) as usize,
-                        direction,
-                    };
-
-                    if let Some(node) = nodes.get_mut(&position) {
-                        if let Some(node_cost) = node.cost {
-                            if cost < node_cost {
-                                node.cost = Some(cost);
-                            }
-                        } else {
+                if let Some(node) = nodes.get_mut(&position) {
+                    if let Some(node_cost) = node.cost {
+                        if cost < node_cost {
                             node.cost = Some(cost);
                         }
+                    } else {
+                        node.cost = Some(cost);
                     }
                 }
             }
