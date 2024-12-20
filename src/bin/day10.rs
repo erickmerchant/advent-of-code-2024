@@ -8,16 +8,16 @@ struct Node {
 }
 
 fn get_grid(input: Vec<String>) -> Vec<Vec<Node>> {
-    let mut grid = vec![];
-    let mut trails = vec![];
+    let mut grid = Vec::new();
+    let mut trails = Vec::new();
 
     for (y, line) in input.iter().enumerate() {
-        let mut row = vec![];
+        let mut row = Vec::new();
 
         for (x, value) in line.chars().map(|c| c.to_digit(10).unwrap()).enumerate() {
             let cell = Node {
                 value,
-                keys: vec![],
+                keys: Vec::new(),
             };
 
             row.push(cell);
@@ -31,7 +31,7 @@ fn get_grid(input: Vec<String>) -> Vec<Vec<Node>> {
     }
 
     for step in (0..=8).rev() {
-        let mut next_trails = vec![];
+        let mut next_trails = Vec::new();
 
         for (key, x, y) in trails.clone() {
             for (dx, dy) in &[(1, 0), (-1, 0), (0, 1), (0, -1)] {

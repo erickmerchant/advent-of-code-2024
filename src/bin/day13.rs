@@ -24,7 +24,7 @@ struct Game {
 }
 
 fn part1(input: String) -> usize {
-    let mut games: Vec<Game> = vec![];
+    let mut games: Vec<Game> = Vec::new();
 
     for (_, [a, b, c, d, e, f]) in GAME_REGEX.captures_iter(&input).map(|c| c.extract()) {
         games.push(Game {

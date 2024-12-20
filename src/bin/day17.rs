@@ -31,7 +31,7 @@ impl Device {
                     self.instruction_pointer += 2;
                 }
                 1 => {
-                    self.registers[1] = self.registers[1] ^ literal_operand;
+                    self.registers[1] ^= literal_operand;
                     self.instruction_pointer += 2;
                 }
                 2 => {
@@ -74,14 +74,12 @@ impl Device {
             .map(|m| m.as_str().parse::<usize>().unwrap())
             .collect();
 
-        let device = Device {
+        Device {
             registers: nums[0..3].try_into().unwrap(),
             program: nums[3..].to_vec(),
             instruction_pointer: 0,
-            output: vec![],
-        };
-
-        device
+            output: Vec::new(),
+        }
     }
 }
 

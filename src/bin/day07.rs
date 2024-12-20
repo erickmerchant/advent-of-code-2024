@@ -26,10 +26,10 @@ fn get_result(input: Vec<String>, operators: &[Operator]) -> usize {
             if let Some((total, parts)) = line.split(":").collect_tuple::<(&str, &str)>() {
                 let total: usize = total.trim().parse().unwrap();
                 let parts: Vec<&str> = parts.split_whitespace().collect();
-                let mut results: Vec<usize> = vec![parts[0].parse().unwrap()];
+                let mut results = [parts[0].parse().unwrap()].into();
 
                 for part in &parts[1..parts.len()] {
-                    let mut new_results = vec![];
+                    let mut new_results = Vec::new();
 
                     for result in results {
                         for operator in operators {

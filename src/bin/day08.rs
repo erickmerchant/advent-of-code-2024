@@ -58,7 +58,7 @@ struct Lines {
 impl Lines {
     fn new(input: Vec<String>) -> Self {
         let lines: Vec<Vec<char>> = input.into_iter().map(|s| s.chars().collect()).collect();
-        let mut points: Vec<(char, Point)> = vec![];
+        let mut points: Vec<(char, Point)> = Vec::new();
 
         for (y, line) in lines.iter().enumerate() {
             let y = y as isize;
@@ -87,8 +87,8 @@ impl Lines {
 
 fn part1(input: Vec<String>) -> usize {
     let lines = Lines::new(input);
-    let mut antennas = HashMap::<char, Vec<Point>>::new();
-    let mut antinodes = HashSet::<Point>::new();
+    let mut antennas: HashMap<char, Vec<Point>> = HashMap::new();
+    let mut antinodes: HashSet<Point> = HashSet::new();
 
     for (c, current) in lines.points.iter() {
         let antenna = antennas.entry(*c).or_default();
@@ -117,8 +117,8 @@ fn part1(input: Vec<String>) -> usize {
 
 fn part2(input: Vec<String>) -> usize {
     let lines = Lines::new(input);
-    let mut antennas = HashMap::<char, Vec<Point>>::new();
-    let mut antinodes = HashSet::<Point>::new();
+    let mut antennas: HashMap<char, Vec<Point>> = HashMap::new();
+    let mut antinodes: HashSet<Point> = HashSet::new();
 
     for (c, current) in lines.points.iter() {
         let antenna = antennas.entry(*c).or_default();

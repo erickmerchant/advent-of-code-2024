@@ -17,7 +17,7 @@ struct Point {
 fn get_answer(input: Vec<String>) -> usize {
     let mut grid: HashMap<Point, Square> = HashMap::new();
     let mut grid_done = false;
-    let mut directions: Vec<char> = vec![];
+    let mut directions: Vec<char> = Vec::new();
     let mut current = Point { x: 0, y: 0 };
     let last_x = input[0].len() - 1;
     let last_y = input.len() - 1;

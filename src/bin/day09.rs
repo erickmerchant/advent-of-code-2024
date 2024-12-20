@@ -3,7 +3,7 @@ fn part1(input: String) -> usize {
         .chars()
         .map(|c| c.to_digit(10).unwrap() as usize)
         .collect::<Vec<usize>>();
-    let mut result: Vec<Option<usize>> = vec![];
+    let mut result: Vec<Option<usize>> = Vec::new();
     let mut is_on = true;
     let mut to_move_count = 0;
     let mut id = 0;
@@ -68,11 +68,11 @@ fn part2(input: String) -> usize {
         .chars()
         .map(|c| c.to_digit(10).unwrap() as usize)
         .collect::<Vec<usize>>();
-    let mut result: Vec<Block> = vec![];
+    let mut result: Vec<Block> = Vec::new();
     let mut is_on = true;
     let mut id = 0;
-    let mut free_map: Vec<Span> = vec![];
-    let mut used_map: Vec<Span> = vec![];
+    let mut free_map: Vec<Span> = Vec::new();
+    let mut used_map: Vec<Span> = Vec::new();
 
     for count in input {
         let new_result;

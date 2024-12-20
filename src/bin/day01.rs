@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 
 fn part1(input: Vec<String>) -> usize {
-    let mut left: Vec<usize> = vec![];
-    let mut right: Vec<usize> = vec![];
+    let mut left: Vec<usize> = Vec::new();
+    let mut right: Vec<usize> = Vec::new();
 
     for line in input {
         let parts: Vec<usize> = line
@@ -31,8 +31,8 @@ fn part1(input: Vec<String>) -> usize {
 }
 
 fn part2(input: Vec<String>) -> usize {
-    let mut right_frequency_map = HashMap::<usize, usize>::new();
-    let mut left: Vec<usize> = vec![];
+    let mut right_frequency_map: HashMap<usize, usize> = HashMap::new();
+    let mut left: Vec<usize> = Vec::new();
 
     for line in input {
         let parts: Vec<usize> = line

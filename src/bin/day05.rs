@@ -4,7 +4,7 @@ use std::cmp::Ordering;
 type Rule = (usize, usize);
 
 fn both_parts(input: Vec<String>) -> (usize, usize) {
-    let mut rules: Vec<Rule> = vec![];
+    let mut rules: Vec<Rule> = Vec::new();
     let mut result_rights = 0;
     let mut result_wrongs = 0;
 

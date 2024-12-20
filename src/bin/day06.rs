@@ -64,7 +64,7 @@ fn get_path(lines: &[Vec<char>], start: Step, placed_object: Option<Point>) -> (
     let last_x = lines[0].len() - 1;
     let last_y = lines.len() - 1;
     let mut current: Step = start;
-    let mut visited: Vec<Step> = vec![];
+    let mut visited: Vec<Step> = Vec::new();
     let mut is_loop = false;
 
     loop {

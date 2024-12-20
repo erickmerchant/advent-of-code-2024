@@ -38,7 +38,7 @@ fn part2(input: Vec<String>) -> usize {
                         continue;
                     }
 
-                    result += part1(vec![m.to_string()]);
+                    result += part1([m.to_string()].into());
                 }
             }
         }
@@ -59,13 +59,13 @@ mod tests {
     use super::*;
 
     fn get_fixture1() -> Vec<String> {
-        vec!["xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))".to_string()]
+        ["xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))".to_string()]
+            .into()
     }
 
     fn get_fixture2() -> Vec<String> {
-        vec![
-            "xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))".to_string(),
-        ]
+        ["xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))".to_string()]
+            .into()
     }
 
     #[test]

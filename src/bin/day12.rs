@@ -9,8 +9,8 @@ fn part1(input: Vec<String>) -> usize {
     let lines: Vec<Vec<char>> = input.into_iter().map(|s| s.chars().collect()).collect();
     let last_x = lines[0].len() - 1;
     let last_y = lines.len() - 1;
-    let mut processed: Vec<(usize, usize)> = vec![];
-    let mut plots: Vec<Plot> = vec![];
+    let mut processed: Vec<(usize, usize)> = Vec::new();
+    let mut plots: Vec<Plot> = Vec::new();
 
     for (y, line) in lines.iter().enumerate() {
         for (x, kind) in line.iter().enumerate() {
@@ -23,7 +23,9 @@ fn part1(input: Vec<String>) -> usize {
                 cell_count: 0,
                 fence_count: 0,
             };
-            let mut stack = vec![(x, y)];
+            let mut stack = Vec::new();
+
+            stack.push((x, y));
 
             while let Some((x, y)) = stack.pop() {
                 if processed.contains(&(x, y)) {

@@ -9,8 +9,8 @@ struct Cell {
 }
 
 fn get_answer(input: Vec<String>, max_xy: usize, byte_count: usize) -> usize {
-    let mut cells = HashMap::<Coords, Cell>::new();
-    let mut corrupted = HashSet::<Coords>::new();
+    let mut cells: HashMap<Coords, Cell> = HashMap::new();
+    let mut corrupted: HashSet<Coords> = HashSet::new();
 
     for line in input[0..byte_count].iter() {
         let parts: Vec<&str> = line.split(",").collect();
@@ -69,7 +69,7 @@ fn get_answer(input: Vec<String>, max_xy: usize, byte_count: usize) -> usize {
 
             let current_cost = cells.get(&(current_x, current_y)).unwrap().cost;
 
-            let mut changes = Vec::<(isize, isize)>::new();
+            let mut changes: Vec<(isize, isize)> = Vec::new();
 
             if current_x > 0 {
                 changes.push((-1, 0));
