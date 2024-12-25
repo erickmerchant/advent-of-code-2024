@@ -37,8 +37,8 @@ fn part1(input: String) -> usize {
                 y: d.parse().unwrap(),
             },
             prize: Coords {
-                x: e.parse().unwrap(),
-                y: f.parse().unwrap(),
+                x: e.parse::<usize>().unwrap(),
+                y: f.parse::<usize>().unwrap(),
             },
         });
     }
@@ -46,22 +46,24 @@ fn part1(input: String) -> usize {
     let mut total_cost = 0;
 
     for game in games {
-        let mut prev_cost = usize::MAX;
+        let mut total = None;
 
         for a in 0..=1000 {
             for b in 0..=1000 {
-                let cost = (a * 3) + b;
                 let x = (game.button_a.x * a) + (game.button_b.x * b);
                 let y = (game.button_a.y * a) + (game.button_b.y * b);
+                let cost = (a * 3) + b;
 
-                if x == game.prize.x && y == game.prize.y && cost < prev_cost {
-                    prev_cost = cost;
+                if x == game.prize.x && y == game.prize.y && total.is_none() {
+                    total = Some(cost);
+
+                    break;
                 }
             }
         }
 
-        if prev_cost < usize::MAX {
-            total_cost += prev_cost;
+        if let Some(total) = total {
+            total_cost += total;
         }
     }
 
