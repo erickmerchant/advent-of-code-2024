@@ -3,9 +3,7 @@ use std::sync::LazyLock;
 
 static GAME_REGEX: LazyLock<Regex> = LazyLock::new(|| {
     Regex::new(
-        r"Button A: X\+([0-9]+), Y\+([0-9]+)
-Button B: X\+([0-9]+), Y\+([0-9]+)
-Prize: X\=([0-9]+), Y\=([0-9]+)",
+        r"Button A: X\+([0-9]+), Y\+([0-9]+)\n\s*Button B: X\+([0-9]+), Y\+([0-9]+)\n\s*Prize: X\=([0-9]+), Y\=([0-9]+)",
     )
     .unwrap()
 });
@@ -48,7 +46,7 @@ fn part1(input: String) -> usize {
     for game in games {
         let mut total = None;
 
-        for a in 0..=1000 {
+        'outer: for a in 0..=1000 {
             for b in 0..=1000 {
                 let x = (game.button_a.x * a) + (game.button_b.x * b);
                 let y = (game.button_a.y * a) + (game.button_b.y * b);
@@ -57,7 +55,7 @@ fn part1(input: String) -> usize {
                 if x == game.prize.x && y == game.prize.y && total.is_none() {
                     total = Some(cost);
 
-                    break;
+                    break 'outer;
                 }
             }
         }
@@ -82,20 +80,20 @@ mod tests {
 
     fn get_fixture() -> String {
         "Button A: X+94, Y+34
-Button B: X+22, Y+67
-Prize: X=8400, Y=5400
+		Button B: X+22, Y+67
+		Prize: X=8400, Y=5400
 
-Button A: X+26, Y+66
-Button B: X+67, Y+21
-Prize: X=12748, Y=12176
+		Button A: X+26, Y+66
+		Button B: X+67, Y+21
+		Prize: X=12748, Y=12176
 
-Button A: X+17, Y+86
-Button B: X+84, Y+37
-Prize: X=7870, Y=6450
+		Button A: X+17, Y+86
+		Button B: X+84, Y+37
+		Prize: X=7870, Y=6450
 
-Button A: X+69, Y+23
-Button B: X+27, Y+71
-Prize: X=18641, Y=10279"
+		Button A: X+69, Y+23
+		Button B: X+27, Y+71
+		Prize: X=18641, Y=10279"
             .to_string()
     }
 
