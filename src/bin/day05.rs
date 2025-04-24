@@ -60,8 +60,8 @@ fn main() {
     let input = advent::get_input();
     let (a, b) = both_parts(input);
 
-    println!("{}", a);
-    println!("{}", b);
+    println!("{a}");
+    println!("{b}");
 }
 
 #[cfg(test)]
